@@ -104,6 +104,9 @@ using namespace ABI::Windows::Storage;
 #define QSETTINGS_USE_QSTANDARDPATHS
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for SHGetKnownFolderPath.
+#include <windows/windows-stubs.hpp> // SHGetKnownFolderPath
+
 // ************************************************************************
 // QConfFile
 
@@ -965,7 +968,9 @@ static QString windowsConfigPath(const KNOWNFOLDERID &type)
     QString result;
 
     PWSTR path = nullptr;
-    if (SHGetKnownFolderPath(type, KF_FLAG_DONT_VERIFY, NULL, &path) == S_OK) {
+    // XXXih: wincompat: Work around some C++ goofiness in pack expansion by using nullptr.
+    // if (SHGetKnownFolderPath(type, KF_FLAG_DONT_VERIFY, NULL, &path) == S_OK) {
+    if (SHGetKnownFolderPath(type, KF_FLAG_DONT_VERIFY, nullptr, &path) == S_OK) {
         result = QString::fromWCharArray(path);
         CoTaskMemFree(path);
     }

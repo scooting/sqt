@@ -1,0 +1,8 @@
+*
+!.gitignore
+!CMakeLists.txt
+!example.toolchain.cmake
+!sqt.cmake
+!sqt-files.cmake
+!sqt-init.cmake
+!bootstrap-executables/CMakeLists.txt

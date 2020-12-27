@@ -93,7 +93,9 @@ static quint64 getTickCount()
         return counter.QuadPart;
     }
 
-    return GetTickCount64();
+    // XXXih: FIXME: wincompat: GetTickCount64 is only available in Vista+. This falls back to the 32-bit counter, which isn't great.
+    // return GetTickCount64();
+    return GetTickCount();
 }
 
 quint64 qt_msectime()

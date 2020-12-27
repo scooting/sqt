@@ -1262,10 +1262,13 @@ QByteArray QTzTimeZonePrivate::systemTimeZoneId() const
     else if (ianaId.startsWith(':'))
         ianaId = ianaId.mid(1);
 
+    // XXXih: no-c++-stdlib: thread_local depends on libstdc++ __cxa_thread_atexit.
+    #if 0
     if (ianaId.isEmpty()) {
         thread_local static ZoneNameReader reader;
         ianaId = reader.name();
     }
+    #endif
 
     return ianaId;
 }

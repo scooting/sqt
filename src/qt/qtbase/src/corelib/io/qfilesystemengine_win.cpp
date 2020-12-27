@@ -156,6 +156,9 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  define QT_FEATURE_fslibs 1
 #endif // Q_OS_WINRT
 
+// XXXih: wincompat: Include Qt Windows stubs.
+#include <windows/windows-stubs.hpp> // GetLongPathNameW, SHCreateItemFromParsingName
+
 #if QT_CONFIG(fslibs)
 #include <aclapi.h>
 #include <userenv.h>
@@ -265,7 +268,10 @@ static inline bool toFileTime(const QDateTime &date, FILETIME *fileTime)
         lTime.wMilliseconds = t.msec();
         lTime.wDayOfWeek = d.dayOfWeek() % 7;
 
+        // XXXih: FIXME: wincompat: TzSpecificLocalTimeToSystemTime is only available in XP+.
+        #if 0
         if (!::TzSpecificLocalTimeToSystemTime(0, &lTime, &sTime))
+        #endif
             return false;
     } else {
         QDateTime utcDate = date.toUTC();
@@ -329,6 +335,8 @@ static QString readSymLink(const QFileSystemEntry &link)
         free(rdb);
         CloseHandle(handle);
 
+// XXXih: FIXME: wincompat: GetVolumePathNamesForVolumeName is only available in XP+.
+#if 0
 #if QT_CONFIG(fslibs)
         initGlobalSid();
         QRegExp matchVolName(QLatin1String("^Volume\\{([a-z]|[0-9]|-)+\\}\\\\"), Qt::CaseInsensitive);
@@ -340,6 +348,7 @@ static QString readSymLink(const QFileSystemEntry &link)
                 result.replace(0,matchVolName.matchedLength(), QString::fromWCharArray(buffer));
         }
 #endif // QT_CONFIG(fslibs)
+#endif
     }
 #else
     Q_UNUSED(link);
@@ -696,7 +705,9 @@ static inline QByteArray fileId(HANDLE handle)
 // File ID for Windows starting from version 8.
 QByteArray fileIdWin8(HANDLE handle)
 {
-#if !defined(QT_BOOTSTRAPPED) && !defined(QT_BUILD_QMAKE)
+// XXXih: FIXME: wincompat: GetFileInformationByHandleEx
+// #if !defined(QT_BOOTSTRAPPED) && !defined(QT_BUILD_QMAKE)
+#if 0 && !defined(QT_BOOTSTRAPPED) && !defined(QT_BUILD_QMAKE)
     QByteArray result;
     FILE_ID_INFO infoEx;
     if (GetFileInformationByHandleEx(handle,
@@ -1393,7 +1404,9 @@ QString QFileSystemEngine::tempPath()
     const DWORD len = GetTempPath(MAX_PATH, tempPath);
     if (len) { // GetTempPath() can return short names, expand.
         wchar_t longTempPath[MAX_PATH];
-        const DWORD longLen = GetLongPathName(tempPath, longTempPath, MAX_PATH);
+        // XXXih: wincompat: GetLongPathName is only available in 2000+.
+        // const DWORD longLen = GetLongPathName(tempPath, longTempPath, MAX_PATH);
+        const DWORD longLen = GetLongPathNameW(tempPath, longTempPath, MAX_PATH);
         ret = longLen && longLen < MAX_PATH ?
               QString::fromWCharArray(longTempPath, longLen) :
               QString::fromWCharArray(tempPath, len);

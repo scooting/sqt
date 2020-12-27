@@ -47,6 +47,9 @@
 
 #include <qt_windows.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for GetVolumePathName and GetVolumeNameForVolumeMountPointW.
+#include <windows/windows-stubs.hpp> // GetVolumePathName, GetVolumeNameForVolumeMountPointW
+
 QT_BEGIN_NAMESPACE
 
 static const int defaultBufferSize = MAX_PATH + 1;

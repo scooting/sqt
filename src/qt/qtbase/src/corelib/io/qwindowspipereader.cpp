@@ -42,6 +42,9 @@
 #include <qelapsedtimer.h>
 #include <qscopedvaluerollback.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for CancelIoEx.
+#include <windows/windows-stubs.hpp> // CancelIoEx
+
 QT_BEGIN_NAMESPACE
 
 QWindowsPipeReader::Overlapped::Overlapped(QWindowsPipeReader *reader)

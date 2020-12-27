@@ -800,6 +800,8 @@ inline void QRecursiveMutexPrivate::unlock() noexcept
 
 QT_END_NAMESPACE
 
+// XXXih: redundant include
+#if 0
 #ifdef QT_LINUX_FUTEX
 #  include "qmutex_linux.cpp"
 #elif defined(Q_OS_MAC)
@@ -808,4 +810,5 @@ QT_END_NAMESPACE
 #  include "qmutex_win.cpp"
 #else
 #  include "qmutex_unix.cpp"
+#endif
 #endif

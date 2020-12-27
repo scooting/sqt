@@ -48,6 +48,9 @@
 
 #include <private/qthread_p.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for RegisterWaitForSingleObject and UnregisterWaitEx.
+#include <windows/windows-stubs.hpp> // RegisterWaitForSingleObject, UnregisterWaitEx
+
 QT_BEGIN_NAMESPACE
 
 /*!

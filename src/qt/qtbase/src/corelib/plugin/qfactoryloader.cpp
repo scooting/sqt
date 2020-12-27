@@ -389,6 +389,18 @@ QObject *QFactoryLoader::instance(int index) const
     if (index < 0)
         return nullptr;
 
+    QVector<QStaticPlugin> staticPlugins = QPluginLoader::staticPlugins();
+    for (int i = 0; i < staticPlugins.count(); ++i) {
+        const QJsonObject object = staticPlugins.at(i).metaData();
+        if (object.value(QLatin1String("IID")) != QLatin1String(d->iid.constData(), d->iid.size()))
+            continue;
+
+        if (index == 0)
+            return staticPlugins.at(i).instance();
+        --index;
+    }
+
+    // XXXih: Load static plugins before loading any plugins contained in DLLs.
 #if QT_CONFIG(library)
     QMutexLocker lock(&d->mutex);
     if (index < d->libraryList.size()) {
@@ -403,17 +415,6 @@ QObject *QFactoryLoader::instance(int index) const
     index -= d->libraryList.size();
     lock.unlock();
 #endif
-
-    QVector<QStaticPlugin> staticPlugins = QPluginLoader::staticPlugins();
-    for (int i = 0; i < staticPlugins.count(); ++i) {
-        const QJsonObject object = staticPlugins.at(i).metaData();
-        if (object.value(QLatin1String("IID")) != QLatin1String(d->iid.constData(), d->iid.size()))
-            continue;
-
-        if (index == 0)
-            return staticPlugins.at(i).instance();
-        --index;
-    }
 
     return nullptr;
 }

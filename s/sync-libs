@@ -1,0 +1,22 @@
+#!/bin/sh
+ROOT="$(cd "$(dirname "$0")"/..; pwd -P)"
+cd "$ROOT"
+
+sync_cfg_dir="$(realpath "$ROOT"/..)"
+sync_cfg_path="$sync_cfg_dir/sync-cfg.sh"
+
+. "$sync_cfg_path"
+
+err=$?
+if [ $? -ne 0 ]; then
+    echo "$sync_cfg_path not found";
+    exit 1;
+fi
+
+if [ -z "$MSVCRT_SUPPORT_ROOT" ]; then
+    echo 'MSVCRT_SUPPORT_ROOT not defined';
+    exit 1;
+fi
+
+unison "$ROOT/src/msvcrt-support" "$MSVCRT_SUPPORT_ROOT"
+

@@ -46,7 +46,10 @@
 #include <QDebug>
 
 #include <limits>
+// XXXih: Avoid gratuitous stdlib locale junk.
+#if 0
 #include <locale>
+#endif
 
 QT_BEGIN_NAMESPACE
 
@@ -92,6 +95,8 @@ static bool stringToNonNegativeInt(const QByteArray &asnString, int *val)
     // be a valid non-negative number.
     Q_ASSERT(val);
 
+    // XXXih: Avoid gratuitous stdlib locale junk.
+    #if 0
     // We want the C locale, as used by QByteArray; however, no leading sign is
     // allowed (which QByteArray would accept), so we have to check the data:
     const std::locale localeC;
@@ -99,6 +104,13 @@ static bool stringToNonNegativeInt(const QByteArray &asnString, int *val)
         if (!std::isdigit(v, localeC))
             return false;
     }
+    #else
+    for (auto const v : asnString) {
+        if (!(v >= '0' && v <= '9')) {
+            return false;
+        }
+    }
+    #endif
 
     bool ok = false;
     *val = asnString.toInt(&ok);

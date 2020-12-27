@@ -459,8 +459,11 @@ void QProcessPrivate::startProcess()
     // safe with vfork semantics: suspend the parent execution until the child
     // either execve()s or _exit()s.
     int ffdflags = FFD_CLOEXEC;
+    // XXXih: HACK: Don't use typeid. Figure this out later.
+    #if 0
     if (typeid(*q) != typeid(QProcess))
         ffdflags |= FFD_USE_FORK;
+    #endif
     pid_t childPid;
     forkfd = ::forkfd(ffdflags , &childPid);
     int lastForkErrno = errno;

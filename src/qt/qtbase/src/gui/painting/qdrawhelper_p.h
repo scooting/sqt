@@ -183,7 +183,9 @@ struct quint24 {
 
 void qBlendGradient(int count, const QSpan *spans, void *userData);
 void qBlendTexture(int count, const QSpan *spans, void *userData);
-#ifdef __SSE2__
+// XXXih: archcompat: always use function pointers for qt_memfill32 and qt_memfill64, to allow graceful upgrades to any ISA extension (like sse2)
+// #ifdef __SSE2__
+#if 1
 extern void (*qt_memfill64)(quint64 *dest, quint64 value, qsizetype count);
 extern void (*qt_memfill32)(quint32 *dest, quint32 value, qsizetype count);
 #else

@@ -5313,3 +5313,17 @@ QT_END_NAMESPACE
 
 #include "moc_qnamespace.cpp"
 #include "moc_qobject.cpp"
+
+/*
+XXXih: cmake-automoc: CMake automoc mistakenly treats Q_OBJECT, Q_GADGET, and
+Q_NAMESPACE in comments as genuine uses of these macros. It then complains:
+
+    "F:/projects/qt/sqt-5.15.2/prj/src/qt/qtbase/src/corelib/kernel/qobject.cpp"
+    contains a "Q_GADGET" macro, but does not include "qobject.moc"!
+    Consider to
+      - add #include "qobject.moc"
+      - enable SKIP_AUTOMOC for this file
+
+I'm working around this here by just including "qobject.moc".
+*/
+#include "qobject.moc"

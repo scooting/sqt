@@ -56,6 +56,9 @@
 
 #include <QtCore/qdebug.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for multi-monitor support.
+#include <windows/windows-stubs.hpp> // GetMonnitorInfoW, EnumDisplayMonitors, MonitorFromWindow
+
 QT_BEGIN_NAMESPACE
 
 static inline QDpi deviceDPI(HDC hdc)

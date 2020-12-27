@@ -5111,3 +5111,19 @@ QAssociativeIterable::const_iterator QAssociativeIterable::const_iterator::opera
 }
 
 QT_END_NAMESPACE
+
+/*
+XXXih: cmake-automoc: CMake automoc mistakenly treats Q_OBJECT, Q_GADGET, and
+Q_NAMESPACE in comments as genuine uses of these macros. It then complains:
+
+    "F:/projects/qt/sqt-5.15.2/prj/src/qt/qtbase/src/corelib/kernel/qvariant.cpp"
+    contains a "Q_OBJECT" macro, but does not include "qvariant.moc"!
+    Consider to
+      - add #include "qvariant.moc"
+      - enable SKIP_AUTOMOC for this file
+
+I'm working around this here by just including "qobject.moc".
+*/
+#ifndef QT_BOOTSTRAPPED
+    #include "qvariant.moc"
+#endif

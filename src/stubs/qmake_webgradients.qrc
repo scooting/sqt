@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/qgradient">
+        <file alias="webgradients.binaryjson">../qt/qtbase/src/gui/painting/webgradients.binaryjson</file>
+    </qresource>
+</RCC>
+

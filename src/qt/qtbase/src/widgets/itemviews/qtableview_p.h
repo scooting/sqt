@@ -58,7 +58,12 @@
 #include <QtCore/QDebug>
 #include "private/qabstractitemview_p.h"
 
+// XXXih: no-c++stdlib: Don't use std::list.
+#if 0
 #include <list>
+#else
+#include <QtCore/qlinkedlist.h>
+#endif
 
 QT_REQUIRE_CONFIG(tableview);
 
@@ -116,7 +121,12 @@ public:
     bool checkConsistency() const;
 #endif
 
+    // XXXih: no-c++stdlib: Don't use std::list.
+    #if 0
     typedef std::list<Span *> SpanList;
+    #else
+    typedef QLinkedList<Span *> SpanList;
+    #endif
     SpanList spans; //lists of all spans
 private:
     //the indexes are negative so the QMap::lowerBound do what i need.

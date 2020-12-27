@@ -69,6 +69,13 @@ static int local_cond_timedwait_relative(pthread_cond_t*, pthread_mutex_t *, con
 __attribute__((weakref("__pthread_cond_timedwait_relative")));
 #endif
 
+#define XXX_pthread_cond_funcs
+
+static std::atomic<decltype(pthread_cond_init) *> dl_pthread_cond_init { };
+static std::atomic<decltype(pthread_cond_wait) *> dl_pthread_cond_wait { };
+static std::atomic<decltype(pthread_cond_signal) *> dl_pthread_cont_signal { };
+//static std::atomic<
+
 static void report_error(int code, const char *where, const char *what)
 {
     if (code != 0)

@@ -78,6 +78,11 @@ static QString winIso639LangName(LPWSTR id = LOCALE_NAME_USER_DEFAULT);
 static QString winIso3116CtryName(LPWSTR id = LOCALE_NAME_USER_DEFAULT);
 #endif // Q_OS_WINRT
 
+// XXXih: wincompat: wokraround for GetUserPreferredUILanguages
+#if !defined(Q_OS_WINRT)
+static const char *winLangCodeToIsoName(int code);
+#endif
+
 #ifndef QT_NO_SYSTEMLOCALE
 
 #ifndef MUI_LANGUAGE_NAME
@@ -642,6 +647,8 @@ QVariant QSystemLocalePrivate::toCurrencyString(const QSystemLocale::CurrencyToS
 QVariant QSystemLocalePrivate::uiLanguages()
 {
 #ifndef Q_OS_WINRT
+// XXXih: wincompat: GetUserPreferredUILanguages is not supported on pre-Vista.
+#if 0
     unsigned long cnt = 0;
     QVarLengthArray<wchar_t, 64> buf(64);
 #  if !defined(QT_BOOTSTRAPPED) && !defined(QT_BUILD_QMAKE) // Not present in MinGW 4.9/bootstrap builds.
@@ -667,6 +674,10 @@ QVariant QSystemLocalePrivate::uiLanguages()
         str += s.size() + 1;
     }
     return result;
+#else
+    // XXXih: FIXME
+    return QStringList(QString::fromLatin1(winLangCodeToIsoName(0x0409)));
+#endif
 #else // !Q_OS_WINRT
     QStringList result;
 

@@ -56,6 +56,9 @@
 
 #include <QtEventDispatcherSupport/private/qwindowsguieventdispatcher_p.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for CheckRemoteDebuggerPresent.
+#include <windows/windows-stubs.hpp> // CheckRemoteDebuggerPresent
+
 QT_BEGIN_NAMESPACE
 
 /*!

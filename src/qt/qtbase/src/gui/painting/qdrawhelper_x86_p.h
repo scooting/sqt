@@ -56,7 +56,9 @@
 
 QT_BEGIN_NAMESPACE
 
-#ifdef __SSE2__
+// XXXih: archcompat: always use function pointers for qt_memfill32 and qt_memfill64
+// #ifdef __SSE2__
+#if defined(QT_COMPILER_SUPPORTS_SSE2)
 void qt_memfill64_sse2(quint64 *dest, quint64 value, qsizetype count);
 void qt_memfill32_sse2(quint32 *dest, quint32 value, qsizetype count);
 void qt_bitmapblit32_sse2(QRasterBuffer *rasterBuffer, int x, int y,

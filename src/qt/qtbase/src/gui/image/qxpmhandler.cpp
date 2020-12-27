@@ -843,7 +843,9 @@ static bool read_xpm_header(
     if (!read_xpm_string(buf, device, source, index, state))
         return false;
 
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: sscanf_s is not available on NT4.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
         if (sscanf_s(buf, "%d %d %d %d", w, h, ncols, cpp) < 4)
 #else
     if (sscanf(buf, "%d %d %d %d", w, h, ncols, cpp) < 4)

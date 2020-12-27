@@ -166,6 +166,9 @@ static QT_PREPEND_NAMESPACE(qint64) qt_gettid()
 
 #include <stdio.h>
 
+// XXXih: Include Qt Windows stubs.
+#include <windows/windows-stubs.hpp>
+
 QT_BEGIN_NAMESPACE
 
 #if !defined(Q_CC_MSVC)
@@ -1314,10 +1317,13 @@ static QStringList backtraceFramesForLogMessage(int frameCount)
                 }
 
                 if (function.startsWith(QLatin1String("_Z"))) {
+                    // XXXih: no-c++-stdlib: Don't use abi::__cxa_demangle.
+                    #if 0
                     QScopedPointer<char, QScopedPointerPodDeleter> demangled(
                                 abi::__cxa_demangle(function.toUtf8(), nullptr, nullptr, nullptr));
                     if (demangled)
                         function = QString::fromUtf8(qCleanupFuncinfo(demangled.data()));
+                    #endif
                 }
 
                 if (function.isEmpty()) {
@@ -1795,7 +1801,9 @@ static void qDefaultMsgHandler(QtMsgType type, const char *buf)
     qDefaultMessageHandler(type, emptyContext, QString::fromLocal8Bit(buf));
 }
 
-#if defined(Q_COMPILER_THREAD_LOCAL)
+// XXXih: Don't use compiler-backed thread-local storage.
+// #if defined(Q_COMPILER_THREAD_LOCAL)
+#if 0 && defined(Q_COMPILER_THREAD_LOCAL)
 
 static thread_local bool msgHandlerGrabbed = false;
 
@@ -1899,9 +1907,13 @@ static void qt_message_fatal(QtMsgType, const QMessageLogContext &context, const
     // terminate the application.
 
 #  if defined(Q_CC_MSVC) && !defined(Q_CC_INTEL)
+    // XXXih: Make debugging less obnoxious.
+    __debugbreak();
     if (IsProcessorFeaturePresent(PF_FASTFAIL_AVAILABLE))
         __fastfail(FAST_FAIL_FATAL_APP_EXIT);
 #  else
+    // XXXih: Make debugging less obnoxious.
+    __builtin_trap();
     RaiseFailFastException(nullptr, nullptr, 0);
 #  endif
 

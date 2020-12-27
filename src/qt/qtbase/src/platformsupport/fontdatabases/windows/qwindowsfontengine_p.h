@@ -117,7 +117,9 @@ public:
     Qt::HANDLE handle() const override;
     bool supportsTransformation(const QTransform &transform) const override;
 
-#ifndef Q_CC_MINGW
+// XXXih: wincompat: GetCharABCWidthsI is only available on 2000+.
+// #ifndef Q_CC_MINGW
+#if 0 && !defined(Q_CC_MINGW)
     void getGlyphBearings(glyph_t glyph, qreal *leftBearing = 0, qreal *rightBearing = 0) override;
 #endif
 

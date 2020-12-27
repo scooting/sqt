@@ -1,0 +1,9 @@
+#!/bin/sh
+ROOT="$(cd "$(dirname "$0")"/..; pwd -P)"
+PRJNAME="sqt-5.15.2"
+
+cd "$ROOT"
+screen -S "$PRJNAME" -d -m
+screen -S "$PRJNAME" -X 'title' "$PRJNAME"
+exec screen -d -r "$PRJNAME"
+

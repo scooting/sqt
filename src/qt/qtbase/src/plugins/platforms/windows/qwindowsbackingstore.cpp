@@ -49,6 +49,9 @@
 
 #include <QtCore/qdebug.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for UpdateLayeredWindowIndirect.
+#include <windows/windows-stubs.hpp> // UpdateLayeredWindowIndirect
+
 QT_BEGIN_NAMESPACE
 
 /*!

@@ -124,6 +124,9 @@
 
 #include <ctype.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for GetConsoleWindow.
+#include <windows/windows-stubs.hpp> // GetConsoleWindow
+
 QT_BEGIN_NAMESPACE
 
 // Helper macro for static functions to check on the existence of the application class.

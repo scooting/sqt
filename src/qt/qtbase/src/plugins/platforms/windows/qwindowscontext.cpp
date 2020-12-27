@@ -92,6 +92,9 @@
 #include <dbt.h>
 #include <wtsapi32.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for WTS.
+#include <windows/windows-stubs.hpp> // WTSGetActiveConsoleSessionId, WTSQuerySessionInformation, WTSFreeMemory
+
 QT_BEGIN_NAMESPACE
 
 Q_LOGGING_CATEGORY(lcQpaWindows, "qt.qpa.windows")
@@ -570,7 +573,13 @@ QString QWindowsContext::registerWindowClass(const QWindow *w)
     const Qt::WindowFlags flags = w->flags();
     const Qt::WindowFlags type = flags & Qt::WindowType_Mask;
     // Determine style and icon.
+
+    // XXXih: Enable CS_HREDRAW and CS_VREDRAW for all top-level windows.
+    #if 0
     uint style = CS_DBLCLKS;
+    #else
+    uint style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
+    #endif
     bool icon = true;
     // The following will not set CS_OWNDC for any widget window, even if it contains a
     // QOpenGLWidget or QQuickWidget later on. That cannot be detected at this stage.

@@ -42,6 +42,11 @@
 
 #include <QtCore/qbytearray.h>
 
+// XXXih: libstdc++-compat: mingwcompat: include <limits> explicitly
+#if 1
+    #include <limits>
+#endif
+
 QT_BEGIN_NAMESPACE
 
 

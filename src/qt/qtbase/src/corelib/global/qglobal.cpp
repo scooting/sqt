@@ -127,6 +127,9 @@ extern "C" {
 #  undef qFatal
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for GetNativeSystemInfo.
+#include <windows/windows-stubs.hpp> // GetNativeSystemInfo
+
 QT_BEGIN_NAMESPACE
 
 #if !QT_DEPRECATED_SINCE(5, 0)
@@ -3325,7 +3328,17 @@ void qt_check_pointer(const char *n, int l) noexcept
     fputs("Out of memory", stderr);
     fprintf(stderr, "  in %s, line %d\n", n, l);
 
+    // XXXih: Avoid std::terminate, which depends on the CRT.
+    #if 0
     std::terminate();
+    #else
+        #if defined(__GNUC__)
+            __builtin_trap();
+            __builtin_unreachable();
+        #else
+            __fastfail(1);
+        #endif
+    #endif
 }
 
 /*
@@ -3455,7 +3468,9 @@ time_t qMkTime(struct tm *when)
 QByteArray qgetenv(const char *varName)
 {
     const auto locker = qt_scoped_lock(environmentMutex);
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: getenv_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     size_t requiredSize = 0;
     QByteArray buffer;
     getenv_s(&requiredSize, 0, 0, varName);
@@ -3522,6 +3537,8 @@ QByteArray qgetenv(const char *varName)
 QString qEnvironmentVariable(const char *varName, const QString &defaultValue)
 {
 #if defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
+    // XXXih: wincompat: _wgetenv_s is not available in the NT4 CRT.
+    #if 0
     const auto locker = qt_scoped_lock(environmentMutex);
     QVarLengthArray<wchar_t, 32> wname(int(strlen(varName)) + 1);
     for (int i = 0; i < wname.size(); ++i) // wname.size() is correct: will copy terminating null
@@ -3538,6 +3555,14 @@ QString qEnvironmentVariable(const char *varName, const QString &defaultValue)
     Q_ASSERT(buffer.endsWith(QLatin1Char('\0')));
     buffer.chop(1);
     return buffer;
+    #else
+    QMutexLocker locker(&environmentMutex);
+    QVarLengthArray<wchar_t, 32> wname(int(strlen(varName)) + 1);
+    for (int i = 0; i < wname.size(); ++i) // wname.size() is correct: will copy terminating null
+        wname[i] = uchar(varName[i]);
+    auto const val = _wgetenv(wname.constData());
+    return QString::fromWCharArray(val);
+    #endif
 #else
     QByteArray value = qgetenv(varName);
     if (value.isNull())
@@ -3571,7 +3596,9 @@ QString qEnvironmentVariable(const char *varName)
 bool qEnvironmentVariableIsEmpty(const char *varName) noexcept
 {
     const auto locker = qt_scoped_lock(environmentMutex);
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: getenv_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     // we provide a buffer that can only hold the empty string, so
     // when the env.var isn't empty, we'll get an ERANGE error (buffer
     // too small):
@@ -3610,7 +3637,9 @@ int qEnvironmentVariableIntValue(const char *varName, bool *ok) noexcept
         (std::numeric_limits<uint>::digits + NumBinaryDigitsPerOctalDigit - 1) / NumBinaryDigitsPerOctalDigit;
 
     const auto locker = qt_scoped_lock(environmentMutex);
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: getenv_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     // we provide a buffer that can hold any int value:
     char buffer[MaxDigitsForOctalInt + 2]; // +1 for NUL +1 for optional '-'
     size_t dummy;
@@ -3675,7 +3704,9 @@ int qEnvironmentVariableIntValue(const char *varName, bool *ok) noexcept
 bool qEnvironmentVariableIsSet(const char *varName) noexcept
 {
     const auto locker = qt_scoped_lock(environmentMutex);
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: getenv_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     size_t requiredSize = 0;
     (void)getenv_s(&requiredSize, 0, 0, varName);
     return requiredSize != 0;
@@ -3706,7 +3737,16 @@ bool qputenv(const char *varName, const QByteArray& value)
 {
     const auto locker = qt_scoped_lock(environmentMutex);
 #if defined(Q_CC_MSVC)
+    // XXXih: wincompat: _putenv_s is not available in the NT4 CRT.
+    #if 0
     return _putenv_s(varName, value.constData()) == 0;
+    #else
+    QByteArray buffer(varName);
+    buffer += '=';
+    buffer += value;
+    char const * envVar = buffer.constData();
+    return _putenv(envVar) == 0;
+    #endif
 #elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_HAIKU)
     // POSIX.1-2001 has setenv
     return setenv(varName, value.constData(), true) == 0;
@@ -3737,7 +3777,14 @@ bool qunsetenv(const char *varName)
 {
     const auto locker = qt_scoped_lock(environmentMutex);
 #if defined(Q_CC_MSVC)
+    // XXXih: wincompat: _putenv_s is not available in the NT4 CRT.
+    #if 0
     return _putenv_s(varName, "") == 0;
+    #else
+    QByteArray buffer(varName);
+    buffer += '=';
+    return _putenv(buffer.constData()) == 0;
+    #endif
 #elif (defined(_POSIX_VERSION) && (_POSIX_VERSION-0) >= 200112L) || defined(Q_OS_BSD4) || defined(Q_OS_HAIKU)
     // POSIX.1-2001, BSD and Haiku have unsetenv
     return unsetenv(varName) == 0;

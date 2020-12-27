@@ -52,7 +52,8 @@
 
 #include <qglobal.h>
 
-#if QT_HAS_INCLUDE(<memory_resource>) && __cplusplus > 201402L
+// XXXih: Don't use memory_resource; this can cause a dependency on libstdc++.
+#if QT_HAS_INCLUDE(<memory_resource>) && __cplusplus > 201402L && 0
 #  include <unordered_set>
 #  include <memory_resource>
 #else
@@ -63,7 +64,8 @@ QT_BEGIN_NAMESPACE
 
 template <typename T, size_t Prealloc = 32>
 class QDuplicateTracker {
-#ifdef __cpp_lib_memory_resource
+// XXXih: Don't use memory_resource; this can cause a dependency on libstdc++.
+#ifdef __cpp_lib_memory_resource && 0
     char buffer[Prealloc * sizeof(T)];
     std::pmr::monotonic_buffer_resource res{buffer, sizeof buffer};
     std::pmr::unordered_set<T> set{&res};
@@ -78,7 +80,8 @@ public:
     Q_REQUIRED_RESULT bool hasSeen(const T &s)
     {
         bool inserted;
-#ifdef __cpp_lib_memory_resource
+// XXXih: Don't use memory_resource; this can cause a dependency on libstdc++.
+#ifdef __cpp_lib_memory_resource && 0
         inserted = set.insert(s).second;
 #else
         set.insert(s);
