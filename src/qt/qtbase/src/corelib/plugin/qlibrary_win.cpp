@@ -138,6 +138,10 @@ bool QLibraryPrivate::load_sys()
             qualifiedFileName = dir.filePath(moduleFileName);
 
         if (loadHints() & QLibrary::PreventUnloadHint) {
+            // XXXih: FIXME: GetModuleHandleEx was introduced in XP.
+            // I don't know if there's a sensible way to emulate this on earlier
+            // versions of Windows.
+            #if 0
             // prevent the unloading of this component
             HMODULE hmod;
             bool ok = GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_PIN |
@@ -146,6 +150,7 @@ bool QLibraryPrivate::load_sys()
                                         &hmod);
             Q_ASSERT(!ok || hmod == hnd);
             Q_UNUSED(ok);
+            #endif
         }
 #endif // !Q_OS_WINRT
     }

@@ -56,6 +56,9 @@
 
 #include <windowsx.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for touch input.
+#include <windows/windows-stubs.hpp> // GetTouchInputInfo, CloseTouchInputHandle
+
 QT_BEGIN_NAMESPACE
 
 static inline void compressMouseMove(MSG *msg)

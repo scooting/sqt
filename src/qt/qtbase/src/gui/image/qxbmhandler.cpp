@@ -248,7 +248,9 @@ static bool write_xbm_image(const QImage &sourceImage, QIODevice *device, const 
             }
         }
     }
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: strcpy_s isn't present in NT4 msvcrt.dll.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     strcpy_s(p, sizeof(" };\n"), " };\n");
 #else
     strcpy(p, " };\n");

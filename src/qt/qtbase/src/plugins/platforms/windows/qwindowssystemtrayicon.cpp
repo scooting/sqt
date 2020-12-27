@@ -71,6 +71,9 @@
 #include <shlobj.h>
 #include <windowsx.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for systray support.
+#include <windows/windows-stubs.hpp> // Shell_NotifyIconGetRect, ChangeWindowMessageFilterEx
+
 QT_BEGIN_NAMESPACE
 
 static const UINT q_uNOTIFYICONID = 0;

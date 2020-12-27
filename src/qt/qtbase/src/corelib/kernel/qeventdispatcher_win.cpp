@@ -54,6 +54,9 @@
 #include <private/qthread_p.h>
 #include <private/qwineventnotifier_p.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for HWND_MESSAGE.
+#include <windows/windows-stubs.hpp> // HWND_MESSAGE
+
 QT_BEGIN_NAMESPACE
 
 extern uint qGlobalPostedEventsCount();

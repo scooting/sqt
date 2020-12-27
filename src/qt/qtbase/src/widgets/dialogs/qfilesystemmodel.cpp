@@ -62,6 +62,9 @@
 #  endif
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for GetLongPathName.
+#include <windows/windows-stubs.hpp> // GetLongPathName
+
 QT_BEGIN_NAMESPACE
 
 /*!

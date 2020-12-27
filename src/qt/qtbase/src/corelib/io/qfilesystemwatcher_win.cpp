@@ -63,6 +63,9 @@
 #  include <vector>
 #endif // !Q_OS_WINRT
 
+// XXXih: wincompat: Include Qt Windows stubs for PnP device notification.
+#include <windows/windows-stubs.hpp> // RegisterDeviceNotificationW, UnregisterDeviceNotification
+
 QT_BEGIN_NAMESPACE
 
 // #define WINQFSW_DEBUG

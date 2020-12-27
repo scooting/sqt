@@ -53,6 +53,9 @@
 #include <intshcut.h>
 #include <qvarlengtharray.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for SHGetKnownFolderPath.
+#include <windows/windows-stubs.hpp> // SHGetKnownFolderPath
+
 #ifndef QT_NO_STANDARDPATHS
 
 QT_BEGIN_NAMESPACE
@@ -181,6 +184,10 @@ static GUID writableSpecialFolderId(QStandardPaths::StandardLocation type)
 static QString sHGetKnownFolderPath(const GUID &clsid)
 {
     QString result;
+    // XXXih: wincompat: Disable Qt's dynamic loading of SHGetKnownFolderPath
+    // and use the stub (which supports reasonable fallback behavior on earlier
+    // versions of Windows).
+    #if 0
     typedef HRESULT (WINAPI *GetKnownFolderPath)(const GUID&, DWORD, HANDLE, LPWSTR*);
 
     static const GetKnownFolderPath sHGetKnownFolderPath = // Vista onwards.
@@ -188,6 +195,10 @@ static QString sHGetKnownFolderPath(const GUID &clsid)
 
     LPWSTR path;
     if (Q_LIKELY(sHGetKnownFolderPath && SUCCEEDED(sHGetKnownFolderPath(clsid, KF_FLAG_DONT_VERIFY, 0, &path)))) {
+    #else
+    LPWSTR path;
+    if (Q_LIKELY(SUCCEEDED(SHGetKnownFolderPath(clsid, KF_FLAG_DONT_VERIFY, nullptr, &path)))) {
+    #endif
         result = convertCharArray(path);
         CoTaskMemFree(path);
     }

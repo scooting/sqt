@@ -606,7 +606,9 @@ static const ushort char_table[] = {
 
 static const int char_table_entries = sizeof(char_table)/sizeof(ushort);
 
-#ifndef Q_CC_MINGW
+// XXXih: wincompat: GetCharABCWidthsI is only available on 2000+.
+// #ifndef Q_CC_MINGW
+#if 0 && !defined(Q_CC_MINGW)
 void QWindowsFontEngine::getGlyphBearings(glyph_t glyph, qreal *leftBearing, qreal *rightBearing)
 {
     HDC hdc = m_fontEngineData->hdc;

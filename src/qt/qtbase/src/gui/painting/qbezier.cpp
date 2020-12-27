@@ -346,6 +346,10 @@ static bool addCircle(const QBezier *b, qreal offset, QBezier *o)
 
     qreal angles[2];
     qreal sign = 1.;
+    // XXXih: Disable autovectorization. This loop generates a call to __vdecl_acos2 in VS2017.
+    #if defined(_MSC_VER)
+        #pragma loop(no_vector)
+    #endif
     for (int i = 0; i < 2; ++i) {
         qreal cos_a = normals[i].x()*normals[i+1].x() + normals[i].y()*normals[i+1].y();
         if (cos_a > 1.)

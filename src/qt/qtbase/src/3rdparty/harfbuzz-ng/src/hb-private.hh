@@ -306,7 +306,9 @@ typedef const _hb_void_t *hb_void_t;
 static inline HB_CONST_FUNC unsigned int
 _hb_popcount32 (uint32_t mask)
 {
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+// XXXih: Don't use __builtin_popcount; it depends on libgcc.
+// #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+#if 0
   return __builtin_popcount (mask);
 #else
   /* "HACKMEM 169" */
@@ -319,7 +321,9 @@ _hb_popcount32 (uint32_t mask)
 static inline HB_CONST_FUNC unsigned int
 _hb_popcount64 (uint64_t mask)
 {
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+// XXXih: Don't use __builtin_popcount; it depends on libgcc.
+// #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+#if 0
   if (sizeof (long) >= sizeof (mask))
     return __builtin_popcountl (mask);
 #endif

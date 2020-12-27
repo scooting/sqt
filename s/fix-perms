@@ -1,0 +1,18 @@
+#!/bin/sh
+ROOT="$(cd "$(dirname "$0")"/..; pwd -P)"
+find \
+    "$ROOT/src/stubs" \
+    "$ROOT/src/testapp" \
+    "$ROOT/src/msvcrt-support" \
+    "$ROOT/src/msvcrt" \
+    \( -not -iname 'resource.h' -a \( \
+    -iname '*.cpp' -o \
+    -iname '*.cc' -o \
+    -iname '*.h' -o \
+    -iname '*.hpp' -o \
+    -iname '*.asm' -o \
+    -iname '*.def' -o \
+    -iname '*.natvis' -o \
+    -iname '*.svg' -o \
+    -iname '*.lib' \
+    \) \) -print0 | xargs -0 chmod 644

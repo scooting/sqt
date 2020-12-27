@@ -135,7 +135,12 @@ void QSpanCollection::updateSpan(QSpanCollection::Span *span, int old_height)
     }
 
     if (span->width() == 0 && span->height() == 0) {
+        // XXXih: no-c++stdlib: Don't use std::list.
+        #if 0
         spans.remove(span);
+        #else
+        spans.removeOne(span);
+        #endif
         delete span;
     }
 }

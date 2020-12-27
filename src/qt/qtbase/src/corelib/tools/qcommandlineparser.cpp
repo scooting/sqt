@@ -51,6 +51,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// XXXih: wincompat: Include Qt Windows stubs for GetConsoleWindow.
+#include <windows/windows-stubs.hpp> // GetConsoleWindow
+
 QT_BEGIN_NAMESPACE
 
 extern void Q_CORE_EXPORT qt_call_post_routines();

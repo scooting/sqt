@@ -1,0 +1,1 @@
+lib /def:msvcrt-nt4.0-winnt4-exports.def /out:msvcrt.lib /name:msvcrt.dll /machine:x86

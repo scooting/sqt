@@ -515,6 +515,27 @@ const uint * QT_FASTCALL qt_fetch_radial_gradient_sse2(uint *buffer, const Opera
     return qt_fetch_radial_gradient_template<QRadialFetchSimd<QSimdSse2>,uint>(buffer, op, data, y, x, length);
 }
 
+#if defined(Q_PROCESSOR_X86_32)
+// XXXih: archcompat: avoid dtoui3; assume sourcerect bounds are lower than 32767 for now
+//
+// TODO: Handle the full range of 32-bit unsigned values.
+//
+// Converts a double-precision IEEE floating point value to a 32-bit unsigned
+// integer. Returns an integer in the range [0, 2 ^ 31 - 1]. Inputs larger than
+// 2 ^ 31 - 1 will return 2147483648.
+static uint32_t Q_ALWAYS_INLINE
+u32_of_f64_trunc(double const src) {
+    auto const xmm = _mm_set_sd(src);
+    return _mm_cvttsd_si32(xmm);
+}
+#elif defined(Q_PROCESSOR_X86_64)
+static uint32_t Q_ALWAYS_INLINE
+u32_of_f64_trunc(double const src) {
+    auto const xmm = _mm_set_sd(src);
+    return static_cast<uint32_t>(_mm_cvttsd_si64(xmm));
+}
+#endif
+
 void qt_scale_image_argb32_on_argb32_sse2(uchar *destPixels, int dbpl,
                                           const uchar *srcPixels, int sbpl, int srch,
                                           const QRectF &targetRect,
@@ -577,17 +598,25 @@ void qt_scale_image_argb32_on_argb32_sse2(uchar *destPixels, int dbpl,
 
     if (sx < 0) {
         int dstx = qFloor((tx1 + qreal(0.5) - targetRect.right()) * ix) + 1;
-        basex = quint32(sourceRect.right() * 65536) + dstx;
+        // XXXih: archcompat: avoid dtoui3; assume sourcerect bounds are lower than 32767 for now
+        // basex = quint32(sourceRect.right() * 65536) + dstx;
+        basex = u32_of_f64_trunc(sourceRect.right() * 65536) + dstx;
     } else {
         int dstx = qCeil((tx1 + qreal(0.5) - targetRect.left()) * ix) - 1;
-        basex = quint32(sourceRect.left() * 65536) + dstx;
+        // XXXih: archcompat: avoid dtoui3; assume sourcerect bounds are lower than 32767 for now
+        // basex = quint32(sourceRect.left() * 65536) + dstx;
+        basex = u32_of_f64_trunc(sourceRect.left() * 65536) + dstx;
     }
     if (sy < 0) {
         int dsty = qFloor((ty1 + qreal(0.5) - targetRect.bottom()) * iy) + 1;
-        srcy = quint32(sourceRect.bottom() * 65536) + dsty;
+        // XXXih: archcompat: avoid dtoui3; assume sourcerect bounds are lower than 32767 for now
+        // srcy = quint32(sourceRect.bottom() * 65536) + dsty;
+        srcy = u32_of_f64_trunc(sourceRect.bottom() * 65536) + dsty;
     } else {
         int dsty = qCeil((ty1 + qreal(0.5) - targetRect.top()) * iy) - 1;
-        srcy = quint32(sourceRect.top() * 65536) + dsty;
+        // XXXih: archcompat: avoid dtoui3; assume sourcerect bounds are lower than 32767 for now
+        // srcy = quint32(sourceRect.top() * 65536) + dsty;
+        srcy = u32_of_f64_trunc(sourceRect.top() * 65536) + dsty;
     }
 
     quint32 *dst = ((quint32 *) (destPixels + ty1 * dbpl)) + tx1;

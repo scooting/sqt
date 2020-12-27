@@ -84,6 +84,9 @@
 #include "qwindowsvulkaninstance.h"
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for DWM and touch.
+#include <windows/windows-stubs.hpp> // DwmIsCompositionEnabled, DwmEnableBlurBehindWindow, UnregisterTouchWindow, SetLayeredWindowAttributes, UpdateLayeredWindow, MonitorFromPoint
+
 QT_BEGIN_NAMESPACE
 
 using QWindowCreationContextPtr = QSharedPointer<QWindowCreationContext>;
@@ -2845,6 +2848,8 @@ void QWindowsWindow::setAlertState(bool enabled)
 
 void QWindowsWindow::alertWindow(int durationMs)
 {
+    // XXXih: I cannot stand flashing taskbar entries
+    #if 0
     UINT timeOutMs = GetCaretBlinkTime();
     if (!timeOutMs || timeOutMs == INFINITE)
         timeOutMs = 250;
@@ -2856,10 +2861,13 @@ void QWindowsWindow::alertWindow(int durationMs)
     info.dwTimeout = timeOutMs;
     info.uCount = durationMs == 0 ? 10 : UINT(durationMs) / timeOutMs;
     FlashWindowEx(&info);
+    #endif
 }
 
 void QWindowsWindow::stopAlertWindow()
 {
+    // XXXih: I cannot stand flashing taskbar entries
+    #if 0
     FLASHWINFO info;
     info.cbSize = sizeof(info);
     info.hwnd = m_data.hwnd;
@@ -2867,6 +2875,7 @@ void QWindowsWindow::stopAlertWindow()
     info.dwTimeout = 0;
     info.uCount = 0;
     FlashWindowEx(&info);
+    #endif
 }
 
 bool QWindowsWindow::isEnabled() const

@@ -58,6 +58,9 @@
 #include "private/qtextengine_p.h"
 #include "private/qfont_p.h"
 
+// XXXih: no-c++stdlib: Don't use std::list.
+#include <QtCore/qlinkedlist.h>
+
 QT_BEGIN_NAMESPACE
 
 class QPainterPath;
@@ -380,7 +383,12 @@ private:
         QExplicitlySharedDataPointer<QFontEngineGlyphCache> cache;
         bool operator==(const GlyphCacheEntry &other) const { return cache == other.cache; }
     };
+    // XXXih: no-c++stdlib: Don't use std::list.
+    #if 0
     typedef std::list<GlyphCacheEntry> GlyphCaches;
+    #else
+    typedef QLinkedList<GlyphCacheEntry> GlyphCaches;
+    #endif
     mutable QHash<const void *, GlyphCaches> m_glyphCaches;
 
 private:

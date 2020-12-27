@@ -70,6 +70,9 @@
 #define PATH_MAX FILENAME_MAX
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for SetFilePointerEx and GetNativeSystemInfo.
+#include <windows/windows-stubs.hpp> // SetFilePointerEx, GetNativeSystemInfo
+
 QT_BEGIN_NAMESPACE
 
 static inline bool isUncPath(const QString &path)

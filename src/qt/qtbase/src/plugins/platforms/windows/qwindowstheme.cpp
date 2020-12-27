@@ -88,6 +88,9 @@
 #  define USE_IIMAGELIST
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for shellapi support.
+#include <windows/windows-stubs.hpp> // SHGetStockIconInfo, SHGetImageList
+
 QT_BEGIN_NAMESPACE
 
 static inline QColor COLORREFToQColor(COLORREF cr)

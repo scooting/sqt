@@ -174,7 +174,9 @@ char *qstrcpy(char *dst, const char *src)
 {
     if (!src)
         return nullptr;
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: strcpy_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
     const int len = int(strlen(src));
     // This is actually not secure!!! It will be fixed
     // properly in a later release!
@@ -212,7 +214,9 @@ char *qstrncpy(char *dst, const char *src, uint len)
     if (!src || !dst)
         return nullptr;
     if (len > 0) {
-#ifdef Q_CC_MSVC
+// XXXih: wincompat: strcpy_s is not available in the NT4 CRT.
+// #ifdef Q_CC_MSVC
+#if 0 && defined(Q_CC_MSVC)
         strncpy_s(dst, len, src, len - 1);
 #else
         strncpy(dst, src, len);

@@ -60,6 +60,9 @@
 #define PIPE_REJECT_REMOTE_CLIENTS 0x08
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for GetConsoleWindow.
+#include <windows/windows-stubs.hpp> // GetConsoleWindow, GetProcessId
+
 QT_BEGIN_NAMESPACE
 
 QProcessEnvironment QProcessEnvironment::systemEnvironment()

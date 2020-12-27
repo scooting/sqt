@@ -66,6 +66,9 @@
 #  include <d2d1.h>
 #endif
 
+// XXXih: wincompat: Include Qt Windows stubs for AddFontMemResourceEx and RemoveFontMemResourceEx.
+#include <windows/windows-stubs.hpp> // AddFontMemResourceEx, RemoveFontMemResourceEx
+
 QT_BEGIN_NAMESPACE
 
 Q_LOGGING_CATEGORY(lcQpaFonts, "qt.qpa.fonts")
@@ -1326,8 +1329,10 @@ QT_WARNING_POP
         DWORD count = 0;
         QByteArray newFontData = font.data();
         HANDLE fontHandle =
+            // XXXih: wincompat: Variadic template pack expansion doesn't do implicit conversion from int to void *
             AddFontMemResourceEx(const_cast<char *>(newFontData.constData()),
-                                 DWORD(newFontData.size()), 0, &count);
+                                 // DWORD(newFontData.size()), 0, &count);
+                                 DWORD(newFontData.size()), nullptr, &count);
         if (count == 0 && fontHandle != 0) {
             RemoveFontMemResourceEx(fontHandle);
             fontHandle = 0;
@@ -1581,8 +1586,10 @@ QStringList QWindowsFontDatabase::addApplicationFont(const QByteArray &fontData,
 
         DWORD dummy = 0;
         font.handle =
+            // XXXih: wincompat: Variadic template pack expansion doesn't do implicit conversion from int to void *
             AddFontMemResourceEx(const_cast<char *>(fontData.constData()),
-                                 DWORD(fontData.size()), 0, &dummy);
+                                 // DWORD(fontData.size()), 0, &dummy);
+                                 DWORD(fontData.size()), nullptr, &dummy);
         if (font.handle == 0)
             return QStringList();
 
@@ -1630,7 +1637,9 @@ QStringList QWindowsFontDatabase::addApplicationFont(const QByteArray &fontData,
         if (families.isEmpty())
             return QStringList();
 
-        if (AddFontResourceExW((wchar_t*)fileName.utf16(), FR_PRIVATE, 0) == 0)
+        // XXXih: wincompat: Templated wrapper complains about 0 vs nullptr
+        // if (AddFontResourceExW((wchar_t*)fileName.utf16(), FR_PRIVATE, 0) == 0)
+        if (AddFontResourceExW((wchar_t*)fileName.utf16(), FR_PRIVATE, nullptr) == 0)
             return QStringList();
 
         font.handle = 0;

@@ -77,6 +77,9 @@
 
 // #define USE_NATIVE_COLOR_DIALOG /* Testing purposes only */
 
+// XXXih: wincompat: Include Qt Windows stubs for shellapi functions.
+#include <windows/windows-stubs.hpp> // SHCreateItemFromParsingName, SHGetKnownFolderIDList, SHCreateItemFromIDList
+
 QT_BEGIN_NAMESPACE
 
 #ifndef QT_NO_DEBUG_STREAM

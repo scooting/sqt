@@ -58,6 +58,9 @@
 
 #include <algorithm>
 
+// XXXih: wincompat: Include Qt Windows stubs for ImmAssociateContextEx.
+#include <windows/windows-stubs.hpp> // ImmAssociateContextEx
+
 QT_BEGIN_NAMESPACE
 
 static inline QByteArray debugComposition(int lParam)

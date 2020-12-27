@@ -26,7 +26,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <climits>
+// XXXih: Don't depend on stdlib locale crud.
+#if 0
 #include <locale>
+#endif
 #include <cmath>
 
 #include <double-conversion/double-conversion.h>
@@ -429,9 +432,17 @@ void DoubleToStringConverter::DoubleToAscii(double v,
 namespace {
 
 inline char ToLower(char ch) {
+  // XXXih: Don't depend on stdlib locale crud.
+  #if 0
   static const std::ctype<char>& cType =
       std::use_facet<std::ctype<char> >(std::locale::classic());
   return cType.tolower(ch);
+  #else
+  if (ch >= 'A' && ch <= 'Z') {
+    return ch + ('a' - 'A');
+  }
+  return ch;
+  #endif
 }
 
 inline char Pass(char ch) {

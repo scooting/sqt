@@ -702,7 +702,9 @@ parse_uint32 (const char **pp, const char *end, uint32_t *pv)
 #define HB_LOCALE_T locale_t
 #define HB_CREATE_LOCALE(locName) newlocale (LC_ALL_MASK, locName, nullptr)
 #define HB_FREE_LOCALE(loc) freelocale (loc)
-#elif defined(_MSC_VER)
+// XXXih: wincompat: Disable locale cruft.
+// #elif defined(_MSC_VER)
+#elif 0 && defined(_MSC_VER)
 #define USE_XLOCALE 1
 #define HB_LOCALE_T _locale_t
 #define HB_CREATE_LOCALE(locName) _create_locale (LC_ALL, locName)

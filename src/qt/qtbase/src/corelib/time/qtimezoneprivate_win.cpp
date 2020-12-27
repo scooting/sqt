@@ -465,11 +465,16 @@ int yearEndOffset(const QWinTimeZonePrivate::QWinTransitionRule &rule, int year)
 
 QLocale::Country userCountry()
 {
+    // XXXih: wincompat: GetUserGeoID is not available on NT 4-Win2k.
+    #if 0
     const GEOID id = GetUserGeoID(GEOCLASS_NATION);
     wchar_t code[3];
     const int size = GetGeoInfo(id, GEO_ISO2, code, 3, 0);
     return (size == 3) ? QLocalePrivate::codeToCountry(QStringView(code, size))
                        : QLocale::AnyCountry;
+    #else
+    return QLocale::system().country();
+    #endif
 }
 
 // Index of last rule in rules with .startYear <= year:

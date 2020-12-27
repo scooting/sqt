@@ -68,7 +68,8 @@
 // Implementation inspired on https://hg.mozilla.org/mozilla-central/file/722fdbff1efc/security/nss/lib/freebl/win_rand.c#l146
 // Argument why this is safe to use: https://bugzilla.mozilla.org/show_bug.cgi?id=504270
 extern "C" {
-DECLSPEC_IMPORT BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
+// XXXih: wincompat: RtlGenRandom is only available in XP+.
+// DECLSPEC_IMPORT BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
 }
 #endif
 
@@ -81,12 +82,24 @@ DECLSPEC_IMPORT BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG Rando
 #undef NDEBUG
 #undef Q_ASSERT_X
 #undef Q_ASSERT
+// XXXih: FIXME: don't depend on CRT assertions. _wassert is not available on NT4 msvcrt.dll.
+// It'd be straightforward enough to replace this with a hand-rolled thing that
+// ends in __builtin_trap or __fastfail, but I don't think assertions for a
+// not-terribly-useful random number generator are that important.
+#if 0
 #define Q_ASSERT(cond) assert(cond)
 #define Q_ASSERT_X(cond, x, msg) assert(cond && msg)
+#else
+#define Q_ASSERT(cond)
+#define Q_ASSERT_X(cond, x, msg)
+#endif
 #if defined(QT_NO_DEBUG) && !defined(QT_FORCE_ASSERTS)
 #  define NDEBUG    1
 #endif
 #include <assert.h>
+
+// XXXih: Include Qt Windows stubs.
+#include <windows/windows-stubs.hpp>
 
 QT_BEGIN_NAMESPACE
 
@@ -170,8 +183,15 @@ struct QRandomGenerator::SystemGenerator
 #elif defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
     qsizetype fillBuffer(void *buffer, qsizetype count) noexcept
     {
+        // XXXih: wincompat: RtlGenRandom is only available in XP+.
+        // The SystemFunction036 preprocessor stub wrapper redirects to a
+        // templated function; there is no function address to be taken here.
+        #if 0
         auto RtlGenRandom = SystemFunction036;
         return RtlGenRandom(buffer, ULONG(count)) ? count: 0;
+        #else
+        return SystemFunction036(buffer, ULONG(count)) ? count : 0;
+        #endif
     }
 #elif defined(Q_OS_WINRT)
     qsizetype fillBuffer(void *, qsizetype) noexcept
@@ -212,7 +232,9 @@ static void fallback_fill(quint32 *ptr, qsizetype left) noexcept
     // and it requires no seeding
     std::generate(ptr, ptr + left, []() {
         unsigned value;
-        rand_s(&value);
+        // XXXih: rand_s isn't available on NT4.
+        // rand_s(&value);
+        value = rand();
         return value;
     });
 }
@@ -1223,7 +1245,9 @@ struct QRandEngine
 };
 }
 
-#if defined(Q_OS_WIN)
+// XXXih: Don't use compiler-backed thread-local storage; this can depend on libgcc.
+// Just let threads race with one another if they use qrand or qsrand.
+#if 1 || defined(Q_OS_WIN)
 // On Windows srand() and rand() already use Thread-Local-Storage
 // to store the seed between calls
 static inline QRandEngine *randTLS()

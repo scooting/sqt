@@ -1,0 +1,8 @@
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR x64)
+set(CMAKE_C_COMPILER "C:/msys2/mingw64/bin/clang.exe")
+set(CMAKE_CXX_COMPILER "C:/msys2/mingw64/bin/clang++.exe")
+set(CMAKE_AR "C:/msys2/mingw64/bin/llvm-ar.exe")
+set(CMAKE_RANLIB "C:/msys2/mingw64/bin/llvm-ranlib.exe")
+set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=lld -Wl,--icf=all")
+set(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=lld -Wl,--icf=all")
